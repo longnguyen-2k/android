@@ -1,6 +1,7 @@
 package com.example.jetnote.ui.components
 
 import NoteColor
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -86,6 +87,16 @@ fun SaveNoteScreen(viewModel: MainViewModel) {
     val moveNoteToTrashDialogShownState: MutableState<Boolean> = rememberSaveable {
         mutableStateOf(false)
     }
+    BackHandler(onBack = {
+        if (bottomDrawerState.isOpen) {
+            coroutineScope.launch { bottomDrawerState.close()}
+        }else{
+                JetNotesRouter.navigateTo(
+                    Screen.Notes
+                )
+            }
+        }
+    )
     Scaffold(
         topBar = {
             val isEditingMode: Boolean = noteEntry.id != NEW_NOTE_ID
@@ -191,11 +202,11 @@ private fun SaveNoteTopAppBar(
     onBackClick: () -> Unit,
     onSaveNoteClick: () -> Unit,
     onOpenColorPickerClick: () -> Unit,
-    onDeleteNoteClick:()->Unit
+    onDeleteNoteClick: () -> Unit
 
-    ) {
+) {
     TopAppBar(
-        title = {Text(text = "Save Note", color = MaterialTheme.colors.onPrimary)},
+        title = { Text(text = "Save Note", color = MaterialTheme.colors.onPrimary) },
         navigationIcon = {
             IconButton(
                 onClick = onBackClick
@@ -217,16 +228,17 @@ private fun SaveNoteTopAppBar(
                 )
 
             }
-            IconButton(onClick =onOpenColorPickerClick) {
+            IconButton(onClick = onOpenColorPickerClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_color_lens_24),
                     contentDescription = "Open Color Picker Button",
                     tint = MaterialTheme.colors.onPrimary
                 )
             }
-            if (isEditingMode){
-                IconButton(onClick =onDeleteNoteClick) {
-                    Icon(imageVector = Icons.Default.Delete,
+            if (isEditingMode) {
+                IconButton(onClick = onDeleteNoteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
                         contentDescription = "Delete Note Button",
                         tint = MaterialTheme.colors.onPrimary
                     )
@@ -287,6 +299,6 @@ private fun ContentTextField(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
-        colors =TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface)
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface)
     )
 }

@@ -30,6 +30,11 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         repository.getAllColors()
     }
 
+    val notesInTrash by lazy {repository.getAllNotesInTrash()}
+
+    private var _selectedNotes = MutableLiveData<List<NoteModel>>(listOf())
+    val selectedNote: LiveData<List<NoteModel>> = _selectedNotes
+
     fun onCreateNewNoteClick() {
         JetNotesRouter.navigateTo(Screen.SaveNote)
     }
@@ -37,6 +42,28 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun onNoteClick(note: NoteModel) {
         _noteEntry.value = note
         JetNotesRouter.navigateTo(Screen. SaveNote)
+    }
+    fun onNoteSelected(note:NoteModel)
+    {
+        _selectedNotes.value= _selectedNotes.value!!.toMutableList().apply {
+            if(contains(note)) remove(note) else add(note)
+        }
+    }
+    fun  restoreNotes(notes:List<NoteModel>){
+        viewModelScope.launch(Dispatchers.Default){
+            repository.restoreNotesFromTrash(notes.map { it.id })
+            withContext(Dispatchers.Main){
+                _selectedNotes.value= listOf()
+            }
+        }
+    }
+    fun  permanentlyDeleteNotes(notes: List<NoteModel>){
+        viewModelScope.launch(Dispatchers.Default) {
+            repository.deleteNotes(notes.map { it.id })
+            withContext(Dispatchers.Main){
+                _selectedNotes.value= listOf()
+            }
+        }
     }
 
     fun onNoteCheckedChange(note: NoteModel) {
