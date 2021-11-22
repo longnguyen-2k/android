@@ -91,7 +91,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun moveNoteToTrash(note: NoteModel) {
         viewModelScope.launch(Dispatchers.Default) {
             repository.moveNoteToTrash(note.id)
-            withContext(Dispatchers.Main) {
+            withContext(Dispatchers.Default) {
                 JetNotesRouter.navigateTo(Screen.Notes)
             }
         }

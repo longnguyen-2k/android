@@ -77,5 +77,5 @@ private fun ComposeButton(onButtonClick: () -> Unit) {
 @Preview
 @Composable
 private fun ComposeButtonPreview() {
-  ComposeButton { }
+  ComposeButton {}
 }
